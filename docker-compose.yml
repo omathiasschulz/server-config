@@ -3,14 +3,19 @@ services:
     image: traefik:v3.0
     container_name: traefik
     restart: always
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-}
+      - ACME_CA_SERVER=${ACME_CA_SERVER:-}
     security_opt:
       - no-new-privileges:true
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/traefik.yml:ro
       - traefik-logs:/var/log/traefik
+      - acme-certificates:/acme
     networks:
       - server-network
     healthcheck:
@@ -31,8 +36,15 @@ services:
       - server-network
     labels:
       - "traefik.enable=true"
+      # HTTP router (will redirect to HTTPS via entrypoint)
+      - "traefik.http.routers.example-api-http.rule=Host(`${API_SUBDOMAIN:-api.localhost}`)"
+      - "traefik.http.routers.example-api-http.entrypoints=web"
+      # HTTPS router with Let's Encrypt
       - "traefik.http.routers.example-api.rule=Host(`${API_SUBDOMAIN:-api.localhost}`)"
-      - "traefik.http.routers.example-api.entrypoints=web"
+      - "traefik.http.routers.example-api.entrypoints=websecure"
+      - "traefik.http.routers.example-api.tls=true"
+      - "traefik.http.routers.example-api.tls.certresolver=letsencrypt"
+      # Service configuration
       - "traefik.http.services.example-api.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
@@ -49,3 +61,5 @@ networks:
 volumes:
   traefik-logs:
     name: traefik-logs
+  acme-certificates:
+    name: acme-certificates
