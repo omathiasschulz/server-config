@@ -49,8 +49,8 @@ services:
       - "traefik.http.routers.example-api.tls=true"
       - "traefik.http.routers.example-api.tls.certresolver=letsencrypt"
       # Service configuration
-      - "traefik.http.routers.example-api.middlewares=rate-limit,sec-headers"
-      - "traefik.http.routers.example-api-http.middlewares=rate-limit,sec-headers"
+      - "traefik.http.routers.example-api.middlewares=rate-limit@file,sec-headers@file"
+      - "traefik.http.routers.example-api-http.middlewares=rate-limit@file,sec-headers@file"
       - "traefik.http.services.example-api.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
