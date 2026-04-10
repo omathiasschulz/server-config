@@ -57,3 +57,19 @@ accessLog: # logs of each request to traefik
 global:
   checkNewVersion: false
   sendAnonymousUsage: false
+
+http:
+  middlewares:
+    rate-limit: # max of 100 requisitions per second
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    sec-headers:
+      headers:
+        browserXssFilter: true # XSS protection
+        frameDeny: true # block site load on iframe
+        customResponseHeaders:
+          server: "" # remove header "Server: traefik" - don't expose software
+          x-powered-by: "" # remove header "X-Powered-By: Express" - don't expose api framework

@@ -2,7 +2,7 @@ services:
   traefik:
     image: traefik:v3.6.1
     container_name: traefik
-    restart: always
+    restart: unless-stopped
     environment:
       - ACME_EMAIL=${ACME_EMAIL:-}
       - ACME_CA_SERVER=${ACME_CA_SERVER:-}
@@ -45,6 +45,8 @@ services:
       - "traefik.http.routers.example-api.tls=true"
       - "traefik.http.routers.example-api.tls.certresolver=letsencrypt"
       # Service configuration
+      - "traefik.http.routers.example-api.middlewares=rate-limit,sec-headers"
+      - "traefik.http.routers.example-api-http.middlewares=rate-limit,sec-headers"
       - "traefik.http.services.example-api.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
