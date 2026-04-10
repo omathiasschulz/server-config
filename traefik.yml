@@ -13,9 +13,7 @@ entryPoints:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: mathias@schulz.net.br
       storage: /acme/acme.json
-      caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
 
@@ -35,19 +33,11 @@ log: # traefik logs
   level: "INFO"
   format: json
   filePath: "/var/log/traefik/traefik.log"
-  maxSize: 100
-  maxBackups: 3
-  maxAge: 7
-  compress: true
 
 accessLog: # logs of each request to traefik
   format: json
   filePath: "/var/log/traefik/access.log"
   bufferingSize: 100
-  maxSize: 100
-  maxBackups: 3
-  maxAge: 7
-  compress: true
   filters:
     statusCodes:
       - "200-299"

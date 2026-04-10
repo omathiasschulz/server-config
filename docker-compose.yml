@@ -16,6 +16,10 @@ services:
       - ./traefik.yml:/traefik.yml:ro
       - traefik-logs:/var/log/traefik
       - acme-certificates:/acme
+    command:
+      - "--configFile=/traefik.yml"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.letsencrypt.acme.caserver=${ACME_CA_SERVER:-}"
     networks:
       - server-network
     healthcheck:
