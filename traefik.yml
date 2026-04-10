@@ -21,6 +21,9 @@ providers:
   docker:
     exposedByDefault: false
     network: "server-network"
+  file:
+    filename: "/traefik.yml"
+    watch: true
 
 ping:
   entryPoint: "web"
